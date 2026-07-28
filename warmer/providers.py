@@ -16,7 +16,11 @@ Status = str  # "ok" | "limited" | "weekly" | "error"
 
 
 def run(pc: dict[str, Any]) -> tuple[int | None, str, str]:
-    """Execute the warm command. Returns (returncode, stdout, stderr)."""
+    """Execute the warm command. Returns (returncode, stdout, stderr).
+
+    The command runs in ``cwd`` (a neutral directory) when set, so an agentic
+    CLI can't wander into a real project and start doing work.
+    """
     try:
         proc = subprocess.run(
             pc["command"],
@@ -24,6 +28,7 @@ def run(pc: dict[str, Any]) -> tuple[int | None, str, str]:
             text=True,
             timeout=pc["timeout_seconds"],
             stdin=subprocess.DEVNULL,
+            cwd=pc.get("cwd") or None,
         )
         return proc.returncode, proc.stdout, proc.stderr
     except subprocess.TimeoutExpired:

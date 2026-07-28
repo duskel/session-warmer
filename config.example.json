@@ -11,24 +11,34 @@
   "providers": {
     "claude": {
       "enabled": true,
-      "command": ["claude", "-p", "warm", "--max-turns", "1"],
+      "command": ["claude", "-p", "Reply with the single word: ready"],
+      "cwd": "/var/lib/session-warmer",
       "timeout_seconds": 120,
       "limit_patterns": [
-        "usage limit",
+        "usage limit reached",
         "rate limit",
-        "limit reached",
-        "you've reached your",
-        "out of .* (?:messages|requests)"
+        "you'?ve reached your",
+        "out of (?:messages|requests|credits)",
+        "too many requests",
+        "quota exceeded"
       ],
-      "weekly_patterns": ["weekly limit", "this week", "weekly usage"],
+      "weekly_patterns": ["weekly limit", "weekly usage limit", "reached your weekly"],
       "reset_patterns": ["reset[s]? (?:at|in) ([^\\n.]+)", "try again (?:at|in) ([^\\n.]+)"]
     },
     "codex": {
       "enabled": true,
-      "command": ["codex", "exec", "warm"],
+      "command": ["codex", "exec", "--skip-git-repo-check", "Reply with the single word: ready"],
+      "cwd": "/var/lib/session-warmer",
       "timeout_seconds": 120,
-      "limit_patterns": ["usage limit", "rate limit", "limit reached", "quota"],
-      "weekly_patterns": ["weekly"],
+      "limit_patterns": [
+        "usage limit reached",
+        "rate limit",
+        "you'?ve reached your",
+        "out of (?:messages|requests|credits)",
+        "too many requests",
+        "quota exceeded"
+      ],
+      "weekly_patterns": ["weekly limit", "weekly usage limit", "reached your weekly"],
       "reset_patterns": ["reset[s]? (?:at|in) ([^\\n.]+)", "try again (?:at|in) ([^\\n.]+)"]
     }
   }
