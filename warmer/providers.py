@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+import tempfile
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -28,7 +29,7 @@ def run(pc: dict[str, Any]) -> tuple[int | None, str, str]:
             text=True,
             timeout=pc["timeout_seconds"],
             stdin=subprocess.DEVNULL,
-            cwd=pc.get("cwd") or None,
+            cwd=pc.get("cwd") or tempfile.gettempdir(),
         )
         return proc.returncode, proc.stdout, proc.stderr
     except subprocess.TimeoutExpired:
