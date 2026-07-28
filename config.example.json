@@ -1,0 +1,35 @@
+{
+  "timezone": "Asia/Karachi",
+  "state_path": "/var/lib/session-warmer/state.json",
+  "notify": {
+    "enabled": true,
+    "resend_api_key_env": "RESEND_API_KEY",
+    "from": "Session Warmer <warmer@duskel.com>",
+    "to": ["you@example.com"],
+    "min_interval_minutes": 60
+  },
+  "providers": {
+    "claude": {
+      "enabled": true,
+      "command": ["claude", "-p", "warm", "--max-turns", "1"],
+      "timeout_seconds": 120,
+      "limit_patterns": [
+        "usage limit",
+        "rate limit",
+        "limit reached",
+        "you've reached your",
+        "out of .* (?:messages|requests)"
+      ],
+      "weekly_patterns": ["weekly limit", "this week", "weekly usage"],
+      "reset_patterns": ["reset[s]? (?:at|in) ([^\\n.]+)", "try again (?:at|in) ([^\\n.]+)"]
+    },
+    "codex": {
+      "enabled": true,
+      "command": ["codex", "exec", "warm"],
+      "timeout_seconds": 120,
+      "limit_patterns": ["usage limit", "rate limit", "limit reached", "quota"],
+      "weekly_patterns": ["weekly"],
+      "reset_patterns": ["reset[s]? (?:at|in) ([^\\n.]+)", "try again (?:at|in) ([^\\n.]+)"]
+    }
+  }
+}

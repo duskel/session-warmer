@@ -1,0 +1,29 @@
+# Templated per provider: session-warmer@claude.service, session-warmer@codex.service
+[Unit]
+Description=Warm the %i CLI usage window
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=warmer
+Group=warmer
+Environment=HOME=/var/lib/session-warmer
+Environment=WARMER_CONFIG=/etc/session-warmer/config.json
+EnvironmentFile=/etc/session-warmer/secrets.env
+WorkingDirectory=/opt/session-warmer
+ExecStart=/usr/bin/python3 -m warmer warm --provider %i
+
+# --- hardening: this is a scheduler with no inbound surface ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/session-warmer
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictSUIDSGID=yes

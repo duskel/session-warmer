@@ -1,0 +1,18 @@
+# Fires the warm ping at each 5-hour window boundary, in your local timezone.
+# Anchor 07:00 tiles the day into 07-12, 12-17, 17-22, 22-03.
+# Drop 22:00 if you don't work past midnight.
+#
+# The "Asia/Karachi" suffix needs systemd >= 246. On older systemd, remove the
+# suffix and set the box timezone instead: timedatectl set-timezone Asia/Karachi
+[Unit]
+Description=Schedule warming for the %i CLI usage window
+
+[Timer]
+OnCalendar=*-*-* 07,12,17,22:00:00 Asia/Karachi
+AccuracySec=30s
+# Do NOT fire a missed ping late — a stale ping would open a window at the wrong
+# time. If the box was down at 12:00, we simply skip to the next boundary.
+Persistent=false
+
+[Install]
+WantedBy=timers.target
