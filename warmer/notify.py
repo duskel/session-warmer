@@ -16,6 +16,9 @@ from datetime import datetime, timedelta
 from typing import Any
 
 RESEND_ENDPOINT = "https://api.resend.com/emails"
+# Resend sits behind Cloudflare, which 403s the default "Python-urllib/x.y"
+# User-Agent. Send an explicit one so the request is accepted.
+USER_AGENT = "session-warmer/1.0 (+https://github.com/duskel/session-warmer)"
 
 
 def _should_send(ncfg: dict[str, Any], provider_state: dict[str, Any], now: datetime, force: bool) -> bool:
@@ -49,7 +52,11 @@ def send_email(ncfg: dict[str, Any], subject: str, body: str) -> int:
         RESEND_ENDPOINT,
         data=json.dumps(payload).encode(),
         method="POST",
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        headers={
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
+        },
     )
     with urllib.request.urlopen(request, timeout=20) as response:
         return response.status
